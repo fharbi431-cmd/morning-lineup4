@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>حضور الطابور الصباحي</title>
+<style>
+  :root{
+    --bg:#F6F4EF;
+    --surface:#FFFFFF;
+    --ink:#1F2A24;
+    --muted:#6B7A70;
+    --line:#E4E0D6;
+    --present:#2F6B4F;
+    --present-bg:#E5F1E9;
+    --absent:#A83B32;
+    --absent-bg:#FBE9E6;
+    --accent:#1F2A24;
+    --radius:14px;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing:border-box;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Segoe UI","Tahoma",Arial,sans-serif;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .app{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:var(--bg);
+  }
+  header{
+    padding:18px 18px 14px;
+    background:var(--surface);
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+    padding-top:calc(18px + env(safe-area-inset-top, 0px));
+    z-index:5;
+  }
+  .school-name{
+    font-size:15px;
+    color:var(--muted);
+    border:none;
+    background:transparent;
+    width:100%;
+    padding:0;
+    font-family:inherit;
+    outline:none;
+  }
+  .logo-row{margin-top:6px;}
+  .signature-inputs{
+    display:flex;
+    gap:8px;
+    margin-top:8px;
+  }
+  .signature-inputs input{
+    flex:1;
+    font-size:12px;
+    padding:6px 8px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--bg);
+    color:var(--ink);
+    font-family:inherit;
+    outline:none;
+    min-width:0;
+  }
+  .logo-btn{
+    font-size:12px;
+    color:var(--present);
+    background:var(--present-bg);
+    border:none;
+    border-radius:20px;
+    padding:5px 12px;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .date-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:8px;
+  }
+  .date-nav{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .date-btn{
+    width:34px;height:34px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--surface);
+    font-size:16px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    color:var(--ink);
+  }
+  .date-label{
+    font-size:18px;
+    font-weight:600;
+  }
+  .today-pill{
+    font-size:12px;
+    color:var(--present);
+    background:var(--present-bg);
+    border-radius:20px;
+    padding:3px 10px;
+    cursor:pointer;
+    border:none;
+  }
+  .summary{
+    display:flex;
+    gap:10px;
+    margin-top:14px;
+  }
+  .stat{
+    flex:1;
+    border-radius:var(--radius);
+    padding:10px 12px;
+    text-align:center;
+  }
+  .stat.present{background:var(--present-bg);color:var(--present);}
+  .stat.absent{background:var(--absent-bg);color:var(--absent);}
+  .stat .num{font-size:20px;font-weight:700;display:block;}
+  .stat .lbl{font-size:12px;}
+
+  main{flex:1;padding:14px 14px 100px;}
+
+  .add-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .add-row input{
+    flex:1;
+    padding:12px 14px;
+    border-radius:var(--radius);
+    border:1px solid var(--line);
+    background:var(--surface);
+    font-size:15px;
+    font-family:inherit;
+    outline:none;
+  }
+  .add-row button{
+    width:46px;
+    border-radius:var(--radius);
+    border:none;
+    background:var(--accent);
+    color:#fff;
+    font-size:20px;
+    cursor:pointer;
+  }
+
+  .teacher{
+    background:var(--surface);
+    border-radius:var(--radius);
+    padding:12px 12px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+    border:1px solid var(--line);
+  }
+  .teacher .name{
+    flex:1;
+    font-size:15px;
+    font-weight:600;
+  }
+  .seg{
+    display:flex;
+    border-radius:20px;
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .seg button{
+    border:none;
+    background:var(--surface);
+    padding:8px 14px;
+    font-size:13px;
+    font-family:inherit;
+    color:var(--muted);
+    cursor:pointer;
+  }
+  .seg button.on.present{background:var(--present);color:#fff;}
+  .seg button.on.absent{background:var(--absent);color:#fff;}
+  .remove-btn{
+    width:26px;height:26px;
+    border-radius:50%;
+    border:none;
+    background:transparent;
+    color:var(--muted);
+    font-size:16px;
+    cursor:pointer;
+  }
+
+  .empty{
+    text-align:center;
+    color:var(--muted);
+    padding:60px 20px;
+    font-size:14px;
+    line-height:1.8;
+  }
+
+  nav.tabs{
+    position:sticky;
+    bottom:0;
+    background:var(--surface);
+    border-top:1px solid var(--line);
+    display:flex;
+    padding-bottom:env(safe-area-inset-bottom, 0px);
+  }
+  nav.tabs button{
+    flex:1;
+    padding:12px 0 10px;
+    border:none;
+    background:transparent;
+    color:var(--muted);
+    font-size:13px;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  nav.tabs button.active{color:var(--ink);font-weight:700;}
+
+  .report-item{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .report-item .name{font-weight:600;font-size:15px;}
+  .report-item .bars{display:flex;gap:14px;font-size:13px;}
+  .report-item .bars span.p{color:var(--present);}
+  .report-item .bars span.a{color:var(--absent);}
+  .export-btn{
+    width:100%;
+    padding:12px;
+    border-radius:var(--radius);
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--ink);
+    font-size:14px;
+    font-family:inherit;
+    cursor:pointer;
+    margin-bottom:14px;
+  }
+  .chart-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:14px;
+    margin-bottom:14px;
+  }
+  .chart-card h3{
+    margin:0 0 12px;
+    font-size:14px;
+    font-weight:700;
+  }
+  .bar-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .bar-row .bar-name{
+    width:92px;
+    flex-shrink:0;
+    font-size:12px;
+    color:var(--muted);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .bar-track{
+    flex:1;
+    height:14px;
+    background:var(--bg);
+    border-radius:8px;
+    overflow:hidden;
+    position:relative;
+  }
+  .bar-fill{
+    height:100%;
+    border-radius:8px;
+  }
+  .bar-pct{
+    width:38px;
+    flex-shrink:0;
+    font-size:12px;
+    font-weight:700;
+    text-align:left;
+  }
+  .trend-svg{width:100%;height:120px;display:block;}
+  .chart-empty{font-size:12px;color:var(--muted);}
+  .week-table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);}
+  table.week-table{border-collapse:collapse;width:100%;min-width:480px;}
+  table.week-table th, table.week-table td{
+    padding:8px 6px;
+    text-align:center;
+    font-size:12px;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  table.week-table th{color:var(--muted);font-weight:600;}
+  table.week-table td:first-child, table.week-table th:first-child{
+    text-align:right;
+    position:sticky;
+    right:0;
+    background:var(--surface);
+    font-weight:600;
+    padding-right:12px;
+  }
+  .day-badge{
+    display:inline-block;
+    width:22px;height:22px;
+    line-height:22px;
+    border-radius:50%;
+    font-size:12px;
+    font-weight:700;
+  }
+  .day-badge.present{background:var(--present-bg);color:var(--present);}
+  .day-badge.absent{background:var(--absent-bg);color:var(--absent);}
+  .day-badge.none{color:var(--muted);}
+  .export-btn:last-of-type{margin-bottom:0;}
+  .danger-btn{
+    color:var(--absent);
+    border-color:var(--absent-bg);
+    margin-top:4px;
+  }
+  .hidden{display:none !important;}
+  .print-only{display:none;}
+
+  @media print{
+    @page{ size:A4; margin:12mm; }
+    html, body{background:#ffffff !important; color:#1a1a1a !important;}
+    #printArea{background:#ffffff;}
+    body *{visibility:hidden;}
+    #printArea, #printArea *{visibility:visible;}
+    #printArea{
+      display:block;
+      position:absolute;
+      inset:0;
+      padding:0;
+      direction:rtl;
+    }
+    #printArea h1{font-size:19px;margin:0 0 4px;text-align:center;}
+    #printArea p{font-size:13px;color:#333;margin:0 0 10px;text-align:center;font-weight:700;}
+    .letterhead{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom:2px solid #333;
+      padding-bottom:8px;
+      margin-bottom:14px;
+    }
+    .letterhead-text{font-size:12.5px;line-height:1.7;font-weight:700;}
+    .letterhead-logo{max-height:60px;max-width:100px;object-fit:contain;}
+    .letterhead-logo[src=""], .letterhead-logo:not([src]){display:none;}
+    #printChartWrap{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:14px;}
+    #printChartWrap .donut-legend{font-size:12px;line-height:1.9;}
+    #printChartWrap .donut-legend .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:6px;}
+    #printArea table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      border:1.5px solid #333;
+    }
+    #printArea th, #printArea td{
+      border-left:1px solid #777;
+      border-bottom:1px solid #777;
+      padding:5px 8px;
+      text-align:right;
+      font-size:11.5px;
+    }
+    #printArea tr th:last-child, #printArea tr td:last-child{border-left:none;}
+    #printArea th{background:#eee;}
+    .print-footer{
+      display:flex;
+      justify-content:space-between;
+      margin-top:26px;
+      font-size:12.5px;
+      font-weight:700;
+    }
+    .status-present{color:#2F6B4F;}
+    .status-absent{color:#A83B32;}
+    .week-print-table th, .week-print-table td{font-size:10.5px !important;padding:4px 5px !important;}
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14181A;
+      --surface:#1D2321;
+      --ink:#EDEFEC;
+      --muted:#8B978F;
+      --line:#2B322F;
+      --present-bg:#193226;
+      --absent-bg:#331E1C;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <input class="school-name" id="schoolName" placeholder="اسم المدرسة" value="متوسطة محمد بن الهيثم">
+    <div class="logo-row">
+      <button class="logo-btn" id="logoBtn">إضافة شعار الوزارة للطباعة</button>
+      <input type="file" id="logoInput" accept="image/*" class="hidden">
+    </div>
+    <div class="signature-inputs">
+      <input id="preparedByInput" placeholder="اسم من أعدّ التقرير" value="إعداد الأستاذ: فهد الذكري">
+      <input id="principalInput" placeholder="اسم مدير المدرسة" value="مدير المدرسة: عبدالمنعم الحيسوني">
+    </div>
+    <div class="date-row">
+      <div class="date-nav">
+        <button class="date-btn" id="prevDay">‹</button>
+        <span class="date-label" id="dateLabel">—</span>
+        <button class="date-btn" id="nextDay">›</button>
+      </div>
+      <button class="today-pill" id="todayBtn">اليوم</button>
+    </div>
+    <div class="summary">
+      <div class="stat present"><span class="num" id="presentCount">0</span><span class="lbl">حاضر</span></div>
+      <div class="stat absent"><span class="num" id="absentCount">0</span><span class="lbl">غائب</span></div>
+    </div>
+  </header>
+
+  <main>
+    <section id="todayView">
+      <div class="add-row">
+        <input id="newTeacher" placeholder="أضف اسم معلم جديد" maxlength="60">
+        <button id="addTeacherBtn">+</button>
+      </div>
+      <button class="export-btn" id="importBtn">استيراد أسماء من ملف إكسل</button>
+      <input type="file" id="importFile" accept=".xlsx,.xls,.csv" class="hidden">
+      <button class="export-btn" id="printTodayBtn">طباعة تقرير اليوم (PDF)</button>
+      <div id="teacherList"></div>
+      <div class="empty hidden" id="emptyState">لا يوجد معلمون بعد.<br>أضف أول اسم من الحقل أعلاه.</div>
+    </section>
+
+    <section id="reportView" class="hidden">
+      <button class="export-btn" id="printBtn">طباعة / حفظ كـ PDF</button>
+      <button class="export-btn" id="exportBtn">تصدير التقرير (CSV)</button>
+      <div id="chartArea"></div>
+      <div id="reportList"></div>
+      <div class="empty hidden" id="reportEmpty">لا توجد بيانات كافية لعرض تقرير.</div>
+      <button class="export-btn danger-btn" id="resetBtn">مسح جميع البيانات (المعلمون وسجل الحضور)</button>
+    </section>
+
+    <section id="weekView" class="hidden">
+      <div class="date-row" style="margin-bottom:12px;">
+        <div class="date-nav">
+          <button class="date-btn" id="prevWeek">‹</button>
+          <span class="date-label" id="weekLabel" style="font-size:14px;">—</span>
+          <button class="date-btn" id="nextWeek">›</button>
+        </div>
+        <button class="today-pill" id="thisWeekBtn">هذا الأسبوع</button>
+      </div>
+      <button class="export-btn" id="printWeekBtn">طباعة التقرير الأسبوعي (PDF)</button>
+      <div id="weekTableWrap"></div>
+      <div class="empty hidden" id="weekEmpty">لا يوجد معلمون بعد لعرض التقرير الأسبوعي.</div>
+    </section>
+  </main>
+
+  <div id="printArea" class="print-only">
+    <div class="letterhead">
+      <div class="letterhead-text">
+        <div>المملكة العربية السعودية</div>
+        <div>وزارة التعليم</div>
+        <div id="printSchoolLine"></div>
+      </div>
+      <img id="printLogoImg" class="letterhead-logo" alt="">
+    </div>
+    <p id="printMeta"></p>
+    <div id="printChartWrap"></div>
+    <table id="printTable">
+      <thead id="printTableHead">
+        <tr><th>اسم المعلم</th><th>أيام الحضور</th><th>أيام الغياب</th></tr>
+      </thead>
+      <tbody id="printTableBody"></tbody>
+    </table>
+    <div class="print-footer">
+      <span id="printPrepared"></span>
+      <span id="printPrincipal"></span>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    <button id="tabToday" class="active">اليوم</button>
+    <button id="tabWeek">أسبوعي</button>
+    <button id="tabReport">التقرير</button>
+  </nav>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){
+  const STORE_KEY = "morning-lineup-attendance-v1";
+  const dayNames = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+  const monthNames = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORE_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){ console.error("تعذر تحميل البيانات", e); }
+    return { school:"مدرسة", teachers:[], attendance:{} };
+  }
+  function saveState(){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+    catch(e){ console.error("تعذر حفظ البيانات", e); }
+  }
+
+  let state = loadState();
+  let currentDate = new Date();
+  currentDate.setHours(0,0,0,0);
+  let weekAnchor = new Date();
+  weekAnchor.setHours(0,0,0,0);
+
+  const schoolInput = document.getElementById("schoolName");
+  schoolInput.value = state.school || "متوسطة محمد بن الهيثم";
+  schoolInput.addEventListener("input", ()=>{ state.school = schoolInput.value; saveState(); });
+
+  document.getElementById("logoBtn").addEventListener("click", ()=>{
+    document.getElementById("logoInput").click();
+  });
+  document.getElementById("logoInput").addEventListener("change", (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt)=>{
+      state.logo = evt.target.result; // base64 data URL
+      saveState();
+      alert("تم حفظ الشعار، وسيظهر تلقائيًا عند الطباعة.");
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  });
+
+  const preparedByInput = document.getElementById("preparedByInput");
+  preparedByInput.value = state.preparedBy || "إعداد الأستاذ: فهد الذكري";
+  preparedByInput.addEventListener("input", ()=>{ state.preparedBy = preparedByInput.value; saveState(); });
+
+  const principalInput = document.getElementById("principalInput");
+  principalInput.value = state.principal || "مدير المدرسة: عبدالمنعم الحيسوني";
+  principalInput.addEventListener("input", ()=>{ state.principal = principalInput.value; saveState(); });
+
+  function updateLetterhead(){
+    document.getElementById("printSchoolLine").textContent = state.school || "متوسطة محمد بن الهيثم";
+    const img = document.getElementById("printLogoImg");
+    if(state.logo){ img.src = state.logo; }
+    else { img.removeAttribute("src"); }
+    document.getElementById("printPrepared").textContent = state.preparedBy || "إعداد الأستاذ: فهد الذكري";
+    document.getElementById("printPrincipal").textContent = state.principal || "مدير المدرسة: عبدالمنعم الحيسوني";
+  }
+
+  function fmtKey(d){
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  function fmtLabel(d){
+    return dayNames[d.getDay()]+"، "+d.getDate()+" "+monthNames[d.getMonth()]+" "+d.getFullYear();
+  }
+  function isSameDay(a,b){ return fmtKey(a)===fmtKey(b); }
+
+  const dateLabel = document.getElementById("dateLabel");
+  const teacherList = document.getElementById("teacherList");
+  const emptyState = document.getElementById("emptyState");
+  const presentCount = document.getElementById("presentCount");
+  const absentCount = document.getElementById("absentCount");
+  const todayBtn = document.getElementById("todayBtn");
+
+  function getDayRecord(dateKey){
+    if(!state.attendance[dateKey]) state.attendance[dateKey] = {};
+    return state.attendance[dateKey];
+  }
+
+  function render(){
+    dateLabel.textContent = fmtLabel(currentDate);
+    const today = new Date(); today.setHours(0,0,0,0);
+    todayBtn.style.visibility = isSameDay(currentDate, today) ? "hidden" : "visible";
+
+    const dateKey = fmtKey(currentDate);
+    const dayRecord = getDayRecord(dateKey);
+
+    teacherList.innerHTML = "";
+    if(state.teachers.length === 0){
+      emptyState.classList.remove("hidden");
+    } else {
+      emptyState.classList.add("hidden");
+    }
+
+    let pCount = 0, aCount = 0;
+
+    state.teachers.forEach(t=>{
+      const status = dayRecord[t.id]; // "present" | "absent" | undefined
+      if(status==="present") pCount++;
+      if(status==="absent") aCount++;
+
+      const row = document.createElement("div");
+      row.className = "teacher";
+      row.innerHTML = `
+        <span class="name">${escapeHtml(t.name)}</span>
+        <div class="seg">
+          <button data-id="${t.id}" data-status="present" class="${status==='present'?'on present':''}">حاضر</button>
+          <button data-id="${t.id}" data-status="absent" class="${status==='absent'?'on absent':''}">غائب</button>
+        </div>
+        <button class="remove-btn" data-edit="${t.id}" title="تعديل">✎</button>
+        <button class="remove-btn" data-remove="${t.id}" title="حذف">✕</button>
+      `;
+      teacherList.appendChild(row);
+    });
+
+    presentCount.textContent = pCount;
+    absentCount.textContent = aCount;
+  }
+
+  function escapeHtml(s){
+    const d = document.createElement("div");
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  teacherList.addEventListener("click", (e)=>{
+    const btn = e.target.closest("button");
+    if(!btn) return;
+    const dateKey = fmtKey(currentDate);
+    const dayRecord = getDayRecord(dateKey);
+
+    if(btn.dataset.id){
+      const id = btn.dataset.id;
+      const status = btn.dataset.status;
+      if(dayRecord[id] === status){
+        delete dayRecord[id];
+      } else {
+        dayRecord[id] = status;
+      }
+      saveState();
+      render();
+    } else if(btn.dataset.edit){
+      const id = btn.dataset.edit;
+      const teacher = state.teachers.find(t=>t.id===id);
+      if(!teacher) return;
+      const newName = prompt("تعديل اسم المعلم:", teacher.name);
+      if(newName===null) return;
+      const trimmed = newName.trim();
+      if(!trimmed) return;
+      teacher.name = trimmed;
+      saveState();
+      render();
+      renderReport();
+    } else if(btn.dataset.remove){
+      const id = btn.dataset.remove;
+      if(confirm("حذف هذا المعلم من القائمة؟ سيتم حذف سجل حضوره أيضًا.")){
+        state.teachers = state.teachers.filter(t=>t.id!==id);
+        Object.values(state.attendance).forEach(rec=>{ delete rec[id]; });
+        saveState();
+        render();
+        renderReport();
+      }
+    }
+  });
+
+  document.getElementById("addTeacherBtn").addEventListener("click", addTeacher);
+  document.getElementById("newTeacher").addEventListener("keydown", (e)=>{
+    if(e.key === "Enter") addTeacher();
+  });
+  function addTeacher(){
+    const input = document.getElementById("newTeacher");
+    const name = input.value.trim();
+    if(!name) return;
+    state.teachers.push({ id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), name });
+    input.value = "";
+    saveState();
+    render();
+    renderReport();
+  }
+
+  document.getElementById("importBtn").addEventListener("click", ()=>{
+    document.getElementById("importFile").click();
+  });
+  document.getElementById("importFile").addEventListener("change", (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt)=>{
+      try{
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, {type:"array"});
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, {header:1});
+
+        const existingNames = new Set(state.teachers.map(t=>t.name.trim()));
+        let added = 0, skipped = 0;
+
+        rows.forEach(row=>{
+          if(!row || row.length===0) return;
+          let val = row[0];
+          if(val===undefined || val===null) return;
+          const name = String(val).trim();
+          if(!name) return;
+          // تجاوز صف العنوان إن وجد
+          if(name==="الاسم" || name.toLowerCase()==="name") return;
+          if(existingNames.has(name)){ skipped++; return; }
+          state.teachers.push({ id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), name });
+          existingNames.add(name);
+          added++;
+        });
+
+        saveState();
+        render();
+        renderReport();
+        alert("تمت إضافة "+added+" اسمًا"+(skipped? " (تم تجاوز "+skipped+" اسمًا مكررًا)":"")+".");
+      }catch(err){
+        console.error(err);
+        alert("تعذّر قراءة الملف. تأكد أن الأسماء موجودة في العمود الأول.");
+      }
+      e.target.value = "";
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
+  document.getElementById("prevDay").addEventListener("click", ()=>{
+    currentDate.setDate(currentDate.getDate()-1);
+    render();
+  });
+  document.getElementById("nextDay").addEventListener("click", ()=>{
+    currentDate.setDate(currentDate.getDate()+1);
+    render();
+  });
+  todayBtn.addEventListener("click", ()=>{
+    currentDate = new Date(); currentDate.setHours(0,0,0,0);
+    render();
+  });
+
+  // Tabs
+  const tabToday = document.getElementById("tabToday");
+  const tabWeek = document.getElementById("tabWeek");
+  const tabReport = document.getElementById("tabReport");
+  const todayView = document.getElementById("todayView");
+  const weekView = document.getElementById("weekView");
+  const reportView = document.getElementById("reportView");
+
+  function setActiveTab(tab){
+    [tabToday, tabWeek, tabReport].forEach(b=>b.classList.remove("active"));
+    [todayView, weekView, reportView].forEach(v=>v.classList.add("hidden"));
+    tab.btn.classList.add("active");
+    tab.view.classList.remove("hidden");
+  }
+
+  tabToday.addEventListener("click", ()=> setActiveTab({btn:tabToday, view:todayView}));
+  tabWeek.addEventListener("click", ()=>{
+    setActiveTab({btn:tabWeek, view:weekView});
+    renderWeek();
+  });
+  tabReport.addEventListener("click", ()=>{
+    setActiveTab({btn:tabReport, view:reportView});
+    renderReport();
+  });
+
+  const workDayIndices = [0,1,2,3,4]; // الأحد إلى الخميس
+  function getWeekDates(anchor){
+    const d = new Date(anchor);
+    const sunday = new Date(d);
+    sunday.setDate(d.getDate() - d.getDay());
+    return workDayIndices.map(i=>{
+      const day = new Date(sunday);
+      day.setDate(sunday.getDate()+i);
+      return day;
+    });
+  }
+  function shortDayLabel(d){
+    return dayNames[d.getDay()].replace("ال","")+" "+d.getDate()+"/"+(d.getMonth()+1);
+  }
+
+  function renderWeek(){
+    const wrap = document.getElementById("weekTableWrap");
+    const emptyEl = document.getElementById("weekEmpty");
+    const dates = getWeekDates(weekAnchor);
+
+    document.getElementById("weekLabel").textContent =
+      dates[0].getDate()+"/"+(dates[0].getMonth()+1)+" — "+dates[4].getDate()+"/"+(dates[4].getMonth()+1)+" ("+dates[0].getFullYear()+")";
+
+    if(state.teachers.length===0){
+      wrap.innerHTML = "";
+      emptyEl.classList.remove("hidden");
+      return;
+    }
+    emptyEl.classList.add("hidden");
+
+    let html = `<div class="week-table-scroll"><table class="week-table"><thead><tr><th>المعلم</th>`;
+    dates.forEach(d=> html += `<th>${shortDayLabel(d)}</th>`);
+    html += `</tr></thead><tbody>`;
+
+    state.teachers.forEach(t=>{
+      html += `<tr><td>${escapeHtml(t.name)}</td>`;
+      dates.forEach(d=>{
+        const rec = state.attendance[fmtKey(d)];
+        const status = rec ? rec[t.id] : undefined;
+        if(status==="present") html += `<td><span class="day-badge present">✓</span></td>`;
+        else if(status==="absent") html += `<td><span class="day-badge absent">✕</span></td>`;
+        else html += `<td><span class="day-badge none">—</span></td>`;
+      });
+      html += `</tr>`;
+    });
+    html += `</tbody></table></div>`;
+    wrap.innerHTML = html;
+  }
+
+  document.getElementById("prevWeek").addEventListener("click", ()=>{
+    weekAnchor.setDate(weekAnchor.getDate()-7);
+    renderWeek();
+  });
+  document.getElementById("nextWeek").addEventListener("click", ()=>{
+    weekAnchor.setDate(weekAnchor.getDate()+7);
+    renderWeek();
+  });
+  document.getElementById("thisWeekBtn").addEventListener("click", ()=>{
+    weekAnchor = new Date(); weekAnchor.setHours(0,0,0,0);
+    renderWeek();
+  });
+
+  document.getElementById("printWeekBtn").addEventListener("click", ()=>{
+    const dates = getWeekDates(weekAnchor);
+    updateLetterhead();
+    document.getElementById("printMeta").textContent =
+      "التقرير الأسبوعي — من "+dates[0].getDate()+"/"+(dates[0].getMonth()+1)+" إلى "+dates[4].getDate()+"/"+(dates[4].getMonth()+1)+" ("+dates[0].getFullYear()+")";
+    document.getElementById("printChartWrap").innerHTML = "";
+
+    let headRow = "<tr><th>اسم المعلم</th>";
+    dates.forEach(d=> headRow += `<th>${shortDayLabel(d)}</th>`);
+    headRow += "</tr>";
+    document.getElementById("printTableHead").innerHTML = headRow;
+
+    const tbody = document.getElementById("printTableBody");
+    tbody.innerHTML = "";
+    state.teachers.forEach(t=>{
+      let row = `<td>${escapeHtml(t.name)}</td>`;
+      dates.forEach(d=>{
+        const rec = state.attendance[fmtKey(d)];
+        const status = rec ? rec[t.id] : undefined;
+        if(status==="present") row += `<td class="status-present">حاضر</td>`;
+        else if(status==="absent") row += `<td class="status-absent">لم يحضر</td>`;
+        else row += `<td>—</td>`;
+      });
+      const tr = document.createElement("tr");
+      tr.innerHTML = row;
+      tbody.appendChild(tr);
+    });
+
+    window.print();
+  });
+
+  function computeTotals(){
+    const totals = {};
+    state.teachers.forEach(t=> totals[t.id] = {name:t.name, present:0, absent:0});
+    Object.values(state.attendance).forEach(dayRec=>{
+      Object.entries(dayRec).forEach(([id,status])=>{
+        if(!totals[id]) return;
+        if(status==="present") totals[id].present++;
+        if(status==="absent") totals[id].absent++;
+      });
+    });
+    return totals;
+  }
+
+  function renderReport(){
+    const reportList = document.getElementById("reportList");
+    const reportEmpty = document.getElementById("reportEmpty");
+    reportList.innerHTML = "";
+
+    if(state.teachers.length===0 || Object.keys(state.attendance).length===0){
+      reportEmpty.classList.remove("hidden");
+      document.getElementById("chartArea").innerHTML = "";
+      return;
+    }
+    reportEmpty.classList.add("hidden");
+
+    const totals = computeTotals();
+
+    Object.values(totals).forEach(t=>{
+      const item = document.createElement("div");
+      item.className = "report-item";
+      item.innerHTML = `
+        <span class="name">${escapeHtml(t.name)}</span>
+        <div class="bars"><span class="p">حاضر ${t.present}</span><span class="a">لم يحضر ${t.absent}</span></div>
+      `;
+      reportList.appendChild(item);
+    });
+
+    renderCharts(totals);
+  }
+
+  function renderCharts(totals){
+    const chartArea = document.getElementById("chartArea");
+    chartArea.innerHTML = "";
+
+    // بطاقة: النسبة المئوية الإجمالية للحضور
+    const rateCard = document.createElement("div");
+    rateCard.className = "chart-card";
+    let rateHtml = "<h3>النسبة المئوية الإجمالية للحضور</h3>";
+    const allTotals = Object.values(totals);
+    const sumPresent = allTotals.reduce((s,t)=> s+t.present, 0);
+    const sumAbsent = allTotals.reduce((s,t)=> s+t.absent, 0);
+    const grandTotal = sumPresent + sumAbsent;
+
+    if(grandTotal===0){
+      rateHtml += `<div class="chart-empty">لا توجد سجلات حضور بعد.</div>`;
+      rateCard.innerHTML = rateHtml;
+    } else {
+      const pct = Math.round((sumPresent/grandTotal)*100);
+      const color = pct>=90 ? "var(--present)" : (pct>=75 ? "#C98A2C" : "var(--absent)");
+      rateHtml += `
+        <div class="bar-row" style="margin-bottom:0;">
+          <span class="bar-name">من الإجمالي</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color};"></div></div>
+          <span class="bar-pct">${pct}%</span>
+        </div>
+        <div class="chart-empty" style="margin-top:8px;">${sumPresent} حضور من أصل ${grandTotal} سجلًا لعدد ${state.teachers.length} معلمًا</div>`;
+      rateCard.innerHTML = rateHtml;
+    }
+    chartArea.appendChild(rateCard);
+
+    // بطاقة: اتجاه نسبة الحضور اليومية خلال آخر الأيام المسجلة
+    const trendCard = document.createElement("div");
+    trendCard.className = "chart-card";
+    const dateKeys = Object.keys(state.attendance)
+      .filter(k=> Object.keys(state.attendance[k]).length>0)
+      .sort()
+      .slice(-14);
+
+    let trendHtml = "<h3>اتجاه نسبة الحضور اليومية (آخر الأيام المسجلة)</h3>";
+    if(dateKeys.length < 2){
+      trendHtml += `<div class="chart-empty">سجّل الحضور لأكثر من يوم لعرض الاتجاه.</div>`;
+      trendCard.innerHTML = trendHtml;
+      chartArea.appendChild(trendCard);
+    } else {
+      const rates = dateKeys.map(k=>{
+        const rec = state.attendance[k];
+        const vals = Object.values(rec);
+        const p = vals.filter(v=>v==="present").length;
+        const total = vals.length;
+        return total>0 ? Math.round((p/total)*100) : 0;
+      });
+
+      const w = 320, h = 100, pad = 8;
+      const stepX = (w - pad*2) / (rates.length - 1);
+      const points = rates.map((r,i)=>{
+        const x = pad + i*stepX;
+        const y = pad + (100 - r) * (h - pad*2) / 100;
+        return x+","+y;
+      }).join(" ");
+
+      const lastX = pad + (rates.length-1)*stepX;
+      const svg = `
+        <svg class="trend-svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+          <polyline points="${points}" fill="none" stroke="var(--present)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+          ${rates.map((r,i)=>{
+            const x = pad + i*stepX;
+            const y = pad + (100 - r) * (h - pad*2) / 100;
+            return `<circle cx="${x}" cy="${y}" r="2.5" fill="var(--present)"/>`;
+          }).join("")}
+        </svg>`;
+      trendHtml += svg;
+      trendHtml += `<div class="chart-empty" style="margin-top:6px;">من ${rates[0]}% إلى ${rates[rates.length-1]}%</div>`;
+      trendCard.innerHTML = trendHtml;
+      chartArea.appendChild(trendCard);
+    }
+  }
+
+  document.getElementById("resetBtn").addEventListener("click", ()=>{
+    if(!confirm("سيتم حذف جميع أسماء المعلمين وسجل الحضور بالكامل. هل أنت متأكد؟")) return;
+    if(!confirm("تأكيد أخير: لا يمكن التراجع عن هذه الخطوة. متابعة؟")) return;
+    state = { school: state.school, teachers: [], attendance: {} };
+    saveState();
+    render();
+    renderReport();
+    alert("تم مسح جميع البيانات.");
+  });
+
+  function makeDonutSvg(segments, centerLine1, centerLine2){
+    const r = 42, cx = 50, cy = 50, circumference = 2*Math.PI*r;
+    let offset = 0;
+    let circles = "";
+    segments.forEach(seg=>{
+      if(seg.value<=0) return;
+      const len = (seg.value/segments.total)*circumference;
+      circles += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${seg.color}"
+        stroke-width="14" stroke-dasharray="${len} ${circumference-len}"
+        stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})"/>`;
+      offset += len;
+    });
+    return `
+      <svg width="120" height="120" viewBox="0 0 100 100">
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#e5e0d6" stroke-width="14"/>
+        ${circles}
+        <text x="50" y="47" text-anchor="middle" font-size="16" font-weight="700" fill="#1F2A24">${centerLine1}</text>
+        <text x="50" y="61" text-anchor="middle" font-size="9" fill="#6B7A70">${centerLine2}</text>
+      </svg>`;
+  }
+
+  document.getElementById("printTodayBtn").addEventListener("click", ()=>{
+    const dateKey = fmtKey(currentDate);
+    const dayRecord = getDayRecord(dateKey);
+    const total = state.teachers.length;
+    let present = 0, absent = 0;
+    state.teachers.forEach(t=>{
+      const st = dayRecord[t.id];
+      if(st==="present") present++;
+      else if(st==="absent") absent++;
+    });
+    const unmarked = total - present - absent;
+
+    updateLetterhead();
+    document.getElementById("printMeta").textContent = "تقرير حضور الطابور الصباحي — "+fmtLabel(currentDate);
+
+    const segments = [
+      {value:present, color:"#2F6B4F"},
+      {value:absent, color:"#A83B32"}
+    ];
+    if(unmarked>0) segments.push({value:unmarked, color:"#C9C3B4"});
+    segments.total = total || 1;
+    const pct = total>0 ? Math.round((present/total)*100) : 0;
+
+    let legend = `
+      <span style="display:block;"><span class="dot" style="background:#2F6B4F;"></span>حاضر: ${present}</span>
+      <span style="display:block;"><span class="dot" style="background:#A83B32;"></span>لم يحضر: ${absent}</span>`;
+    if(unmarked>0) legend += `<span style="display:block;"><span class="dot" style="background:#C9C3B4;"></span>لم يُسجَّل: ${unmarked}</span>`;
+    legend += `<span style="display:block;margin-top:4px;">إجمالي المعلمين: ${total}</span>`;
+
+    document.getElementById("printChartWrap").innerHTML =
+      makeDonutSvg(segments, pct+"%", "حاضر من "+total) +
+      `<div class="donut-legend">${legend}</div>`;
+
+    document.getElementById("printTableHead").innerHTML =
+      "<tr><th>اسم المعلم</th><th>الحالة</th><th>اسم المعلم</th><th>الحالة</th></tr>";
+
+    function statusCell(t){
+      const st = dayRecord[t.id];
+      if(st==="present") return `<td>${escapeHtml(t.name)}</td><td class="status-present">حاضر</td>`;
+      if(st==="absent") return `<td>${escapeHtml(t.name)}</td><td class="status-absent">لم يحضر</td>`;
+      return `<td>${escapeHtml(t.name)}</td><td>لم يُسجَّل</td>`;
+    }
+
+    const half = Math.ceil(state.teachers.length/2);
+    const leftCol = state.teachers.slice(0, half);
+    const rightCol = state.teachers.slice(half);
+
+    const tbody = document.getElementById("printTableBody");
+    tbody.innerHTML = "";
+    leftCol.forEach((t,i)=>{
+      const rightT = rightCol[i];
+      const tr = document.createElement("tr");
+      tr.innerHTML = statusCell(t) + (rightT ? statusCell(rightT) : "<td></td><td></td>");
+      tbody.appendChild(tr);
+    });
+
+    window.print();
+  });
+
+  document.getElementById("printBtn").addEventListener("click", ()=>{
+    const totals = computeTotals();
+
+    updateLetterhead();
+    const now = new Date();
+    document.getElementById("printMeta").textContent = "تقرير حضور الطابور الصباحي — تاريخ الطباعة: "+fmtLabel(now);
+    document.getElementById("printChartWrap").innerHTML = "";
+    document.getElementById("printTableHead").innerHTML =
+      "<tr><th>اسم المعلم</th><th>أيام الحضور</th><th>أيام الغياب</th></tr>";
+
+    const tbody = document.getElementById("printTableBody");
+    tbody.innerHTML = "";
+    Object.values(totals).forEach(t=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${escapeHtml(t.name)}</td><td>${t.present}</td><td>${t.absent}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    window.print();
+  });
+
+  document.getElementById("exportBtn").addEventListener("click", ()=>{
+    let csv = "الاسم,أيام الحضور,أيام الغياب\n";
+    const totals = computeTotals();
+    Object.values(totals).forEach(t=>{
+      csv += `"${t.name}",${t.present},${t.absent}\n`;
+    });
+    const blob = new Blob(["\uFEFF"+csv], {type:"text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "تقرير_حضور_الطابور.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
